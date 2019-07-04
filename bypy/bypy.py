@@ -1629,12 +1629,10 @@ get information of the given path (dir / file) at Baidu Yun.
 		result = const.ENoError
 		for name in filenames:
 			# timeout check - Sha
-            if (
-                self.stop_duration is not None
-                and (datetime.now() - self.tick).total_seconds() > self.stop_duration
-            ):
-                pinfo(f"Auto stop time ({self.stop_duration} sec) reached. Exit now.")
-                exit(0)
+            if (self.stop_duration is not None
+				and (datetime.now() - self.tick).total_seconds() > self.stop_duration):
+				pinfo(f"Auto stop time ({self.stop_duration} sec) reached. Exit now.")
+				exit(0)
 			#lfile = os.path.join(dirpath, name)
 			lfile = joinpath(dirpath, name)
 			self.__current_file = lfile
