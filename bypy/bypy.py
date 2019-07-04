@@ -53,6 +53,7 @@ from collections import deque
 from functools import partial
 from argparse import ArgumentParser
 from argparse import RawDescriptionHelpFormatter
+from datetime import datetime
 # unify Python 2 and 3
 if sys.version_info[0] == 2:
 	import urllib as ulp
@@ -308,10 +309,12 @@ class ByPy(object):
 		downloader = "",
 		downloader_args = "",
 		processes = const.DefaultProcessCount,
-		secretkey = const.SecretKey):
+		secretkey = const.SecretKey,
+		stop_duration=None):
 		super(ByPy, self).__init__()
 		self.jsonq = deque(maxlen = 64)
-
+		self.stop_duration = stop_duration
+		self.tick = datetime.now()
 		# these two variables are without leading double underscore "__" as to export the as public,
 		# so if any code using this class can check the current verbose / debug level
 		cached.verbose = self.verbose = verbose
@@ -1625,6 +1628,13 @@ get information of the given path (dir / file) at Baidu Yun.
 
 		result = const.ENoError
 		for name in filenames:
+			# timeout check - Sha
+            if (
+                self.stop_duration is not None
+                and (datetime.now() - self.tick).total_seconds() > self.stop_duration
+            ):
+                pinfo(f"Auto stop time ({self.stop_duration} sec) reached. Exit now.")
+                exit(0)
 			#lfile = os.path.join(dirpath, name)
 			lfile = joinpath(dirpath, name)
 			self.__current_file = lfile
